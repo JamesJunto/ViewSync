@@ -6,7 +6,7 @@ export const startScreenShare = async (videoRef) => {
       audio: true,
     });
 
-    if (videoRef.current) {
+    if (videoRef.current) { 
       videoRef.current.srcObject = stream;
     }
     return stream;

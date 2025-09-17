@@ -2,10 +2,12 @@ import { useState, useRef } from "react";
 import { startScreenShare, stopScreenShare } from "./functions/screen-share";
 
 const Base = () => {
+
   const [isSharing, setIsSharing] = useState(false);
   const [ispaused, setIsPaused] = useState(false);
   const [muted, setIsMuted] = useState(false);
   const [Volume, setVolume] = useState(0);
+
   const videoRef = useRef(null);
 
   const handleStart = async () => {
@@ -25,13 +27,13 @@ const Base = () => {
       videoRef.current.volume = volume / 100;
     }
     setVolume(volume);
-    
+
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white p-6">
       <h1 className="text-3xl font-bold text-teal-400 mb-6">
-        Watch Together 🎬 
+        ViewSync🎬 
       </h1>
 
       <div className="flex gap-4 mb-6">
