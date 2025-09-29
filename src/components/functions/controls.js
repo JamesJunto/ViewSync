@@ -1,10 +1,6 @@
+import { peerConnection } from "./connection";
+
 let stream;
-
-const configuration = {
-  iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
-};
-const peerConnection = new RTCPeerConnection(configuration);
-
 export const startScreenShare = async (videoRef) => {
   try {
     stream = await navigator.mediaDevices.getDisplayMedia({
