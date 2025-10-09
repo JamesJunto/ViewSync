@@ -1,4 +1,4 @@
-import { peerConnection } from "./connection";
+import { peerConnection } from "../backend/connection";
 
 let stream;
 
