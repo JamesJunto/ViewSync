@@ -1,18 +1,21 @@
 import { useState, useRef } from "react";
-import { startScreenShare, stopScreenShare } from "./controls.js";
+import { startScreenShare, stopScreenShare} from "./controls.js";
+import { makeOffer } from "../backend/connection.js";
 
 const useScreenShare = () => {
   const localVideoRef = useRef(null);
   const [isSharing, setIsSharing] = useState(false);
-  const [volume, setVolume] = useState(50);
+  const [volume, setVolume] = useState(0);
 
   const handleStart = async () => {
     await startScreenShare(localVideoRef);
+    makeOffer();
     setIsSharing(true);
   };
 
   const handleStop = () => {
     stopScreenShare(localVideoRef);
+    setVolume(0);
     setIsSharing(false);
   };
 

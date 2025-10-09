@@ -5,7 +5,7 @@ const Base = () => {
   const [isPaused, setIsPaused] = useState(false);
   const [muted, setIsMuted] = useState(false);
   
-  const {localVideoRef,isSharing,volume,handleStart,handleStop,handleVolumeChange,} = useScreenShare();
+  const {localVideoRef,isSharing,volume,handleStart,handleStop,handleVolumeChange} = useScreenShare();
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white p-6">
@@ -21,7 +21,7 @@ const Base = () => {
 
         <button
           onClick={handleStop}
-          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl shadow-md transition"
+          className={`bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl shadow-md transition`}
         >
           Stop Sharing
         </button>
