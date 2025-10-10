@@ -2,57 +2,35 @@ const configuration = {
   iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
 };
 
-export const socket = new WebSocket('ws://localhost:8080');
 export const peerConnection = new RTCPeerConnection(configuration);
 
-export const makeOffer = async () => {
-  try {
-    
-    // Listen for messages from the server
-    socket.addEventListener("message", async (event) => {
-      const data = JSON.parse(event.data);
+const socket = new WebSocket("ws://localhost:8080");
 
-      // If we received an answer from the other peer
-      if (data.answer) {
-        await peerConnection.setRemoteDescription(data.answer);
-      }
-    });
+socket.onmessage = async (event) => {
+  const data = JSON.parse(event.data);
 
-    // Create an offer and set it as our local description
-    const offerCon = await peerConnection.createOffer();
-    await peerConnection.setLocalDescription(offerCon);
+  if (data.offer) {
+    console.log("Received offer:", data.offer);
+    await peerConnection.setRemoteDescription(data.offer);
 
-    console.log("Created offer:", offerCon);
+    const answerCon = await peerConnection.createAnswer();
+    await peerConnection.setLocalDescription(answerCon);
 
-    // Send the offer to the signaling server
-    socket.send(JSON.stringify({ offer: offerCon }));
-
-  } catch (err) {
-    console.error("Error making call:", err);
+    socket.send(JSON.stringify({ answer: answerCon }));
   }
+
+  if (data.answer) {
+    await peerConnection.setRemoteDescription(data.answer);
+    console.log("Received answer:", data.answer);
+  }
+
 };
 
-export const answerCall = async () => {
-  try {
-    // Listen for messages from the server
-    socket.addEventListener("message", async (event) => {
-      const data = JSON.parse(event.data);
+export const makeOffer = async () => {
+  const offerCon = await peerConnection.createOffer();
+  await peerConnection.setLocalDescription(offerCon);
 
-      // If we received an offer from another peer
-      if (data.offer) {
-        await peerConnection.setRemoteDescription(data.offer);
-
-        // Create an answer and set it as our local description
-        const answerCon = await peerConnection.createAnswer();
-        await peerConnection.setLocalDescription(answerCon);
-
-        // Send the answer back to the signaling server
-        socket.send(JSON.stringify({ answer: answerCon }));
-      }
-    });
-  } catch (err) {
-    console.error("Error answering call:", err);
-  }
-  return {  makeOffer, answerCall };
+  socket.send(JSON.stringify({ offer: offerCon }));
+  console.log("Offer sent to server", offerCon);
 };
 

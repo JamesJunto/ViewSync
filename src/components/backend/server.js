@@ -1,11 +1,18 @@
-import { socket } from "./connection"
+import WebSocket from "ws";
 
-socket.on("connection", (ws) => {
-  console.log("A user connected");
+const wss = new WebSocket.Server({ port: 8080 });
 
-  ws.on("message", (message) => {
+  wss.on("connection", (ws) => {
+    console.log("A user connected");
 
-    const data  = JSON.parse(message);
-    console.log("Received message:", data);
-    
-})});
+    ws.on("message", (message) => {
+     wss.clients.forEach((client) => {
+        if (client !== ws && client.readyState === WebSocket.OPEN) {
+          client.send(message);
+        }
+      });
+    });
+  });
+
+wss.onerror = (error) => console.error("WebSocket error:", error);
+  

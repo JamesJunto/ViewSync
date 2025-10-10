@@ -67,7 +67,7 @@ const Base = () => {
         </div>
 
         <div className="flex flex-col items-center mt-4 w-full max-w-3xl">
-          <p className="text-gray-300 mb-2">Volume Control 🔊</p>
+          <p className="text-gray-300 mb-2">Volume 🔊</p>
 
           <div className="flex items-center w-full gap-4">
             <input
