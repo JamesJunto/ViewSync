@@ -1,11 +1,24 @@
 import useScreenShare from "./functions/useScreenShare.js";
-import { useState } from "react";
+import { setupRemoteTrackListener } from "./functions/controls.js";
+import { useState, useEffect } from "react";
 
 const Base = () => {
   const [isPaused, setIsPaused] = useState(false);
   const [muted, setIsMuted] = useState(false);
-  
-  const {localVideoRef,isSharing,volume,handleStart,handleStop,handleVolumeChange} = useScreenShare();
+
+  const {
+    localVideoRef,
+    isSharing,
+    volume,
+    handleStart,
+    handleStop,
+    handleVolumeChange,
+    remoteVideoRef,
+} = useScreenShare();
+
+  useEffect(() => {
+    setupRemoteTrackListener(remoteVideoRef);
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white p-6">
@@ -31,6 +44,14 @@ const Base = () => {
         <video
           id="localVideo"
           ref={localVideoRef}
+          autoPlay
+          playsInline
+          className="w-full rounded-2xl border-2 border-teal-400 shadow-lg"
+        ></video>
+
+        <video
+          id="remoteVideo"
+          ref={remoteVideoRef}
           autoPlay
           playsInline
           className="w-full rounded-2xl border-2 border-teal-400 shadow-lg"

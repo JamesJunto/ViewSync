@@ -1,4 +1,6 @@
 import { peerConnection } from "../backend/connection";
+import { makeOffer } from "../backend/connection";
+
 let stream;
 
 export const startScreenShare = async (videoRef) => {
@@ -15,11 +17,19 @@ export const startScreenShare = async (videoRef) => {
     stream
       .getTracks()
       .forEach((track) => peerConnection.addTrack(track, stream));
+      await makeOffer();
     return stream;
-
   } catch (err) {
     console.error("Error sharing screen:", err);
   }
+};
+
+export const setupRemoteTrackListener = (remoteVideoRef) => {
+  peerConnection.ontrack = (event) => {
+    if (remoteVideoRef.current) { 
+      remoteVideoRef.current.srcObject = event.streams[0];
+    }
+  };
 };
 
 export const stopScreenShare = (videoRef) => {
@@ -28,4 +38,3 @@ export const stopScreenShare = (videoRef) => {
     stream.getTracks().forEach((track) => track.stop());
   }
 };
-
