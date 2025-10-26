@@ -1,1 +1,11 @@
-![bohol](https://github.com/user-attachments/assets/84b4d580-f4ec-4c94-8394-6a2ef1d9e318)
+ScreenShare Chat App (Work in Progress)
+
+Description
+ This is a real-time screen sharing app with chat built using WebRTC.
+ Currently, the app is under development and some features are still being fixed.
+
+Technologies Used
+  JavaScript, React.js
+  WebRTC for real-time screen sharing
+  WebSockets for chat messaging
+  HTML / TAILWIND CSS
