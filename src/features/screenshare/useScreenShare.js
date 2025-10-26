@@ -1,10 +1,10 @@
-import { useState, useRef } from "react";
-import { startScreenShare, stopScreenShare} from "./controls.js";
+import { useState  } from "react";
+import { startScreenShare, stopScreenShare } from "./controls.js";
+
+export const localVideoRef = { current: null };
+export const remoteVideoRef = { current: null };
 
 const useScreenShare = () => {
-  const localVideoRef = useRef(null);
-  const remoteVideoRef = useRef(null);
-
   const [isSharing, setIsSharing] = useState(false);
   const [volume, setVolume] = useState(0);
 
@@ -14,21 +14,28 @@ const useScreenShare = () => {
   };
 
   const handleStop = () => {
-    stopScreenShare(localVideoRef);
+    stopScreenShare(localVideoRef, remoteVideoRef);
     setVolume(0);
     setIsSharing(false);
   };
 
   const handleVolumeChange = (e) => {
-    const volumeValue = e.target.value;
+    const volumeValue = e.target.value; 
     if (localVideoRef.current) {
       localVideoRef.current.volume = volumeValue / 100;
     }
     setVolume(volumeValue);
   };
 
-  return {localVideoRef,isSharing,volume,handleStart,handleStop,handleVolumeChange, remoteVideoRef}
-  
+  return {
+    localVideoRef,
+    isSharing,
+    volume,
+    handleStart,
+    handleStop,
+    handleVolumeChange,
+    remoteVideoRef,
+  };
 };
 
 export default useScreenShare;

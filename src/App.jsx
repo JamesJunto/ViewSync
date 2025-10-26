@@ -1,8 +1,10 @@
-import Base from "./components/Base.jsx";
+import Base from "./features/screenshare/OffererUI";
+import RemotePeer from "./features/screenshare/remoteUI";
 const App = () => {
   return (
     <>
-      <Base />
+    <Base/>
+    <RemotePeer/>
     </>
   );
 };

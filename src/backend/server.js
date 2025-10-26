@@ -13,4 +13,5 @@ wss.on("connection", (ws) => {
     });
   });
 });
+
 wss.onerror = (error) => console.error("WebSocket error:", error);
