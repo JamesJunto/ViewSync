@@ -8,4 +8,4 @@ Technologies Used
   JavaScript, React.js
   WebRTC for real-time screen sharing
   WebSockets for chat messaging
-  HTML / TAILWIND CSS
+  HTML / TAILWIND CSS 
