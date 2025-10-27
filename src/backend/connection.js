@@ -17,7 +17,7 @@ peerConnection.onicecandidate = (event) => {
   if (event.candidate) {
     socket.send(
       JSON.stringify({
-        type: "candidate",
+        type: "candidate-sh",
         candidate: event.candidate,
       })
     );
@@ -31,18 +31,18 @@ socket.onmessage = async (event) => {
   data = JSON.parse(data);
 
   switch (data.type) {
-    case "offer":
+    case "offer-sh":
       await handleOffer(data.offer);
       break;
 
-    case "answer":
+    case "answer-sh":
       if (peerConnection.signalingState === "have-local-offer") {
         console.log("Received answer:", data.answer);
         await peerConnection.setRemoteDescription(data.answer);
       }
       break;
 
-    case "candidate":
+    case "candidate-sh":
       if (peerConnection.remoteDescription) {
         await peerConnection.addIceCandidate(data.candidate);
       } else {
@@ -51,7 +51,7 @@ socket.onmessage = async (event) => {
       }
       break;
 
-    case "stop":
+    case "stop-sh":
       if (remoteVideoRef.current) {
         remoteVideoRef.current.srcObject = null;
       }
@@ -72,7 +72,7 @@ const handleOffer = async (offer) => {
   await peerConnection.setLocalDescription(answer);
 
   sendWhenReady({
-    type: "answer",
+    type: "answer-sh",
     answer: {
       type: answer.type,
       sdp: answer.sdp,
@@ -88,7 +88,7 @@ export const makeOffer = async () => {
     await peerConnection.setLocalDescription(offer);
 
     sendWhenReady({
-      type: "offer",
+      type: "offer-sh",
       offer: {
         type: offer.type,
         sdp: offer.sdp,
