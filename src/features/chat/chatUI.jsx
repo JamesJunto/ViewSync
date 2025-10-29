@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { MessageCircle, X, Send, Minimize2 } from "lucide-react";
-import useChat, { sendMessage } from "./chat";
+import useChat from "./chat";
 
 const ChatWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [unreadCount] = useState(0);
 
-  const { chat } = useChat();
+  const { chat, uniqId, sendMessage } = useChat();
 
   const handleSendMessage = (message) => {
     sendMessage(message);
@@ -73,27 +73,33 @@ const ChatWidget = () => {
           </div>
 
           {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-900/50">
-            {chat.map((msg, index) => (
-              <div
-                key={index}
-                className={`flex ${
-                  msg.sender === "me" ? "justify-end" : "justify-start"
-                }`}
-              >
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-900/50 flex flex-col-reverse">
+            {chat.length === 0 ? (
+              <div className="flex justify-center items-center flex-1 text-gray-400 italic">
+                No messages yet
+              </div>
+            ) : (
+              [...chat].reverse().map((msg, index) => (
                 <div
-                  className={`p-3 text-white rounded-xl max-w-[80%] break-words ${
-                    msg.sender === "me"
-                      ? "bg-teal-600 rounded-br-sm"
-                      : "bg-slate-700 rounded-bl-sm"
+                  key={index}
+                  className={`flex ${
+                    msg.sender === uniqId ? "justify-end" : "justify-start"
                   }`}
                 >
-                  {msg.text}
+                  <div
+                    className={`font-sans p-3 text-white rounded-xl max-w-[80%] break-words ${
+                      msg.sender === uniqId
+                        ? "bg-teal-600 rounded-br-sm"
+                        : "bg-slate-700 rounded-bl-sm"
+                    }`}
+                  >
+                    {msg.text}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
-          
+
           {/* Input Area */}
           <div className="p-4 bg-slate-800 border-t border-slate-700 rounded-b-2xl">
             <div className="flex gap-2 items-end">
@@ -101,6 +107,12 @@ const ChatWidget = () => {
                 <textarea
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSendMessage(message);
+                    }
+                  }}
                   placeholder="Type a message..."
                   rows="2"
                   className="w-full bg-transparent text-white px-4 py-3 outline-none resize-none placeholder-gray-400 text-sm"

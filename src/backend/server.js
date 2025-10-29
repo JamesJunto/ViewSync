@@ -11,7 +11,7 @@ wss.on("connection", (ws) => {
       if (client.readyState === WebSocket.OPEN) {
         if (client !== ws && data.type.includes("sh")) {
           client.send(message);
-        } else if (client !== ws && data.type.includes("chat")) {
+        } else if (data.type.includes("chat")) {
           client.send(message);
         }
       }

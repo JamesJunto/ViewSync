@@ -1,7 +1,11 @@
-import { useState } from "react";
+import { useState,useRef } from "react";
 export const socket = new WebSocket("ws://localhost:8080");
 
- const useChat = () => {
+const useChat = () => {
+  
+const uniqIdRef = useRef(crypto.randomUUID());
+const uniqId = uniqIdRef.current;
+
   const [chat, setChat] = useState([]);
 
   socket.onmessage = async (event) => {
@@ -14,28 +18,31 @@ export const socket = new WebSocket("ws://localhost:8080");
 
       data = JSON.parse(data);
 
-      if (data.type === "chat") {
-        setChat((prevChat) => [...prevChat,  { text: data.text, sender: data.sender }]);
-      }
-     
+          setChat((prevChat) => [
+        ...prevChat,
+        { text: data.text, sender: data.sender },
+      ]);
+    
+      console.log("Received chat message:", data.text);
+
     } catch (error) {
       console.error("WebSocket message processing error:", error);
     }
-  }; 
+  };
 
-  return { chat, setChat };
-};
-
-export const sendMessage = (message) => {
-  try {
-    if (socket.readyState === WebSocket.OPEN) {
-      socket.send(
-        JSON.stringify({ type: "chat", sender: "me", text: message })
-      );
+  const sendMessage = (message) => {
+    try {
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.send(
+          JSON.stringify({ type: "chat", sender: uniqId, text: message })
+        );
+        console.log("Sent chat message:", message)
+      }
+    } catch (error) {
+      console.error("WebSocket send error:", error);
     }
-  } catch (error) {
-    console.error("WebSocket send error:", error);
-  }
+  };
+  return { chat, setChat, uniqId, sendMessage };
 };
 
 export default useChat;
