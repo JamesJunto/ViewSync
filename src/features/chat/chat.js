@@ -17,7 +17,7 @@ const uniqId = uniqIdRef.current;
       }
 
       data = JSON.parse(data);
-
+      if(data.type !== "chat") return;
           setChat((prevChat) => [
         ...prevChat,
         { text: data.text, sender: data.sender },
@@ -36,10 +36,9 @@ const uniqId = uniqIdRef.current;
         socket.send(
           JSON.stringify({ type: "chat", sender: uniqId, text: message })
         );
-        console.log("Sent chat message:", message)
       }
     } catch (error) {
-      console.error("WebSocket send error:", error);
+      alert("Failed to send message:", error);
     }
   };
   return { chat, setChat, uniqId, sendMessage };

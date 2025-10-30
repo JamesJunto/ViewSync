@@ -9,9 +9,9 @@ wss.on("connection", (ws) => {
 
     wss.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
-        if (client !== ws && data.type.includes("sh")) {
+        if (client !== ws) {
           client.send(message);
-        } else if (data.type.includes("chat")) {
+        } else if (data.type === "chat") {
           client.send(message);
         }
       }

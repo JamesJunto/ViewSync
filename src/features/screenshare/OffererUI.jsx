@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { setupRemoteTrackListener } from "./controls.js";
 import useScreenShare from "./useScreenShare.js";
 import { connectionMonitoring } from "./monitoring/connectionMonitor.js";
+import LinkModal from "../components/linkModal.jsx";
 
 import {
   Play,
@@ -16,6 +17,7 @@ const Base = () => {
   const [isPaused, setIsPaused] = useState(false);
   const [muted, setIsMuted] = useState(false);
   const [ready, setReady] = useState(false);
+  const [showModal, setShowModal] = useState(false); // 🔹 controls modal visibility
 
   const {
     localVideoRef,
@@ -26,6 +28,7 @@ const Base = () => {
     handleVolumeChange,
     remoteVideoRef,
   } = useScreenShare();
+
 
   useEffect(() => {
     if (remoteVideoRef?.current) {
@@ -40,6 +43,7 @@ const Base = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
       <div className="container mx-auto px-6 py-8">
+        {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             <div className="bg-gradient-to-r from-teal-400 to-cyan-500 p-3 rounded-2xl shadow-lg">
@@ -62,15 +66,20 @@ const Base = () => {
           </div>
         </div>
 
+        {/* Controls */}
         <div className="flex flex-wrap gap-3 mb-8">
           <button
-            onClick={handleStart}
+            onClick={() => {
+              handleStart();
+              setShowModal(true); // 🔹 show modal after starting share
+            }}
             disabled={isSharing}
             className="flex items-center gap-2 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 active:scale-95"
           >
             <Monitor className="w-5 h-5" />
             Start Sharing
           </button>
+          
 
           <button
             onClick={handleStop}
@@ -82,6 +91,7 @@ const Base = () => {
           </button>
         </div>
 
+        {/* Your Screen */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
@@ -109,6 +119,7 @@ const Base = () => {
           </div>
         </div>
 
+        {/* Media Controls */}
         <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-6 shadow-xl">
           <h3 className="text-lg font-semibold mb-4 text-gray-300">
             Media Controls
@@ -181,6 +192,8 @@ const Base = () => {
           </div>
         </div>
       </div>
+
+      {showModal && <LinkModal onClose={() => setShowModal(false)} />}
     </div>
   );
 };
