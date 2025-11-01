@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { setupRemoteTrackListener } from "./controls.js";
-import useScreenShare from "./useScreenShare.js";
-import { connectionMonitoring } from "./monitoring/connectionMonitor.js";
-import LinkModal from "../components/linkModal.jsx";
+import { setupRemoteTrackListener } from "../screenshare/controls.js";
+import useScreenShare from "../screenshare/useScreenShare.js";
+import { connectionMonitoring } from "../screenshare/monitoring/connectionMonitor.js";
+import LinkModal from "./linkModal.jsx";
 
 import {
   Play,
@@ -17,7 +17,7 @@ const Base = () => {
   const [isPaused, setIsPaused] = useState(false);
   const [muted, setIsMuted] = useState(false);
   const [ready, setReady] = useState(false);
-  const [showModal, setShowModal] = useState(false); // 🔹 controls modal visibility
+  const [showModal, setShowModal] = useState(false);
 
   const {
     localVideoRef,
@@ -27,17 +27,23 @@ const Base = () => {
     handleStop,
     handleVolumeChange,
     remoteVideoRef,
+    disabled,
   } = useScreenShare();
 
-
-  useEffect(() => {
-    if (remoteVideoRef?.current) {
-      setupRemoteTrackListener(remoteVideoRef);
-    }
-  }, [remoteVideoRef]);
+useEffect(() => {
+  setupRemoteTrackListener(remoteVideoRef);
+  console.log("Remote track listener set up");
+}, []);
 
   useEffect(() => {
     connectionMonitoring(setReady);
+  }, []);
+
+  useEffect(() => {
+    setShowModal(true);
+    alert(
+      "Please make sure the peer has copied and opened the link in their browser before starting screen share."
+    );
   }, []);
 
   return (
@@ -69,17 +75,13 @@ const Base = () => {
         {/* Controls */}
         <div className="flex flex-wrap gap-3 mb-8">
           <button
-            onClick={() => {
-              handleStart();
-              setShowModal(true); // 🔹 show modal after starting share
-            }}
+            onClick={handleStart}
             disabled={isSharing}
             className="flex items-center gap-2 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 active:scale-95"
           >
             <Monitor className="w-5 h-5" />
             Start Sharing
           </button>
-          
 
           <button
             onClick={handleStop}
@@ -192,8 +194,15 @@ const Base = () => {
           </div>
         </div>
       </div>
-
-      {showModal && <LinkModal onClose={() => setShowModal(false)} />}
+      {showModal && (
+        <LinkModal
+          onCopied={() => {
+            setTimeout(() => {
+              setShowModal(false);
+            }, 800);
+          }}
+        />
+      )}
     </div>
   );
 };

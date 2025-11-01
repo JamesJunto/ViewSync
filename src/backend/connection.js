@@ -1,11 +1,10 @@
 import { remoteVideoRef } from "../features/screenshare/useScreenShare";
-
 const configuration = {
   iceServers: [
     {
-      urls:['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302']
-    }
-    ],
+      urls: ["stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302"],
+    },
+  ],
 };
 
 export const peerConnection = new RTCPeerConnection(configuration);
@@ -17,7 +16,7 @@ peerConnection.onicecandidate = (event) => {
   if (event.candidate) {
     socket.send(
       JSON.stringify({
-        type: "candidate-sh",
+        type: "candidate",
         candidate: event.candidate,
       })
     );
@@ -39,6 +38,11 @@ socket.onmessage = async (event) => {
       if (peerConnection.signalingState === "have-local-offer") {
         console.log("Received answer:", data.answer);
         await peerConnection.setRemoteDescription(data.answer);
+
+        for (let candidate of pendingCandidates) {
+          await peerConnection.addIceCandidate(candidate);
+        }
+        pendingCandidates = [];
       }
       break;
 
@@ -78,7 +82,7 @@ const handleOffer = async (offer) => {
     },
   });
 
-console.log("Answer sent to server", answer);
+  console.log("Answer sent to server", answer);
 };
 
 export const makeOffer = async () => {
@@ -102,16 +106,11 @@ export const makeOffer = async () => {
 
 const sendWhenReady = (message) => {
   const sendMsg = () => socket.send(JSON.stringify(message));
-  const buffAm = 1024;
-
-  if (socket.bufferedAmount < buffAm) {
-    console.log("Buff amount",socket.bufferedAmount)
+    console.log("Buff amount", socket.bufferedAmount);
     if (socket.readyState === WebSocket.OPEN) {
       sendMsg();
     } else {
       socket.onopen = sendMsg;
-      console.log("Sending", message)
+      console.log("Sending", message);
     }
   }
-
-};

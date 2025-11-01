@@ -1,6 +1,5 @@
 import { peerConnection, makeOffer, socket } from "../../backend/connection";
 
-
 let stream;
 
 export const startScreenShare = async (videoRef) => {
@@ -14,7 +13,16 @@ export const startScreenShare = async (videoRef) => {
       peerConnection.addTrack(track, stream);
     });
 
-    if (socket.readyState == WebSocket.OPEN) {
+      if (socket.readyState === WebSocket.OPEN) {
+      await makeOffer();
+      console.log("Offer sent to server");
+    } else {
+      socket.addEventListener('open', async () => {
+        await makeOffer();
+        console.log("Offer sent after connection opened");
+      }, { once: true });
+    }
+ if (socket.readyState == WebSocket.OPEN) {
       await makeOffer();
       console.log("Client is connected to the server");
     }
@@ -42,26 +50,23 @@ export const setupRemoteTrackListener = (remoteVideoRef) => {
   }
 };
 
-export const stopScreenShare = (videoRef, remoteVideoRef) => {
+export const stopScreenShare = (videoRef) => {
   try {
-    if (videoRef?.current && videoRef.current.srcObject) {
-      videoRef.current.srcObject = null;
-      peerConnection.getSenders().forEach((sender) => {
-        if (sender.track && sender.track.kind === "video") {
-          peerConnection.removeTrack(sender);
-          console.log("Tracks removed")
-        }
-      });
-      socket.send(JSON.stringify({ type: "stop" }));
-    }
-
     if (stream) {
-      stream.getTracks().forEach((t) => t.stop());
+      stream.getTracks().forEach((track) => track.stop());
     }
 
-    if (remoteVideoRef?.current && remoteVideoRef.current.srcObject) {
-      remoteVideoRef.current.srcObject = null;
+    peerConnection.getSenders().forEach((sender) => {
+      if (sender.track) {
+        peerConnection.removeTrack(sender);
+      }
+    });
+
+    if (videoRef?.current) {
+      videoRef.current.srcObject = null;
     }
+
+    socket.send(JSON.stringify({ type: "stop" }));
 
   } catch (err) {
     console.error("Error stopping screen share:", err);

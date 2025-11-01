@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Base from "./features/screenshare/OffererUI";
-import RemotePeer from "./features/screenshare/remoteUI";
+import Base from "./features/components/OffererUI";
+import RemotePeer from "./features/components/remoteUI";
 import ChatWidget from "./features/chat/chatUI";
 
 const App = () => {

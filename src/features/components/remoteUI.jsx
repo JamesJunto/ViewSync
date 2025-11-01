@@ -1,6 +1,6 @@
 import { useState,useEffect } from "react";
-import useScreenShare from "./useScreenShare.js";
-import { connectionMonitoring } from "./monitoring/connectionMonitor.js";
+import useScreenShare from "../screenshare/useScreenShare.js";
+import { connectionMonitoring } from "../screenshare/monitoring/connectionMonitor.js";
 import { useParams } from "react-router-dom";
 import {
   Play,
@@ -17,7 +17,7 @@ const RemotePeer = () => {
   const [ready, setReady] = useState(false);
 
   const { id } = useParams();
-  console.log("RemotePeer ID:", id); // Debugging line
+  console.log("RemotePeer ID:", id); 
 
   console.log("Viewing screen share with ID:", id);
    useEffect(() => {

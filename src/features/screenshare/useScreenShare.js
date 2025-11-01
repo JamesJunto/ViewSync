@@ -1,4 +1,4 @@
-import { useState  } from "react";
+import { useState } from "react";
 import { startScreenShare, stopScreenShare } from "./controls.js";
 
 export const localVideoRef = { current: null };
@@ -9,8 +9,12 @@ const useScreenShare = () => {
   const [volume, setVolume] = useState(0);
 
   const handleStart = async () => {
-    await startScreenShare(localVideoRef);
-    setIsSharing(true);
+    const stream = await startScreenShare(localVideoRef);
+    if (stream) {
+      setIsSharing(true);
+      return stream; 
+    }
+    return null;
   };
 
   const handleStop = () => {
@@ -20,7 +24,7 @@ const useScreenShare = () => {
   };
 
   const handleVolumeChange = (e) => {
-    const volumeValue = e.target.value; 
+    const volumeValue = e.target.value;
     if (localVideoRef.current) {
       localVideoRef.current.volume = volumeValue / 100;
     }
@@ -29,12 +33,12 @@ const useScreenShare = () => {
 
   return {
     localVideoRef,
+    remoteVideoRef,
     isSharing,
     volume,
     handleStart,
     handleStop,
     handleVolumeChange,
-    remoteVideoRef,
   };
 };
 
